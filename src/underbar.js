@@ -111,21 +111,28 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-    var result = [];
+    
+    var obj = {};
+    iterator = (isSorted && iterator) || _.identity;
+
     for (var i = 0; i < array.length; i++) {
-      if (!result.includes(array[i])) {
-        result.push(array[i]);
+     var transformed = iterator(array[i]);
+     if (obj[transformed] === undefined) {
+        obj[transformed] = array[i];
       }
     }
 
+    return _.map(obj, function (value) {
+      return value;
+    });
 
-    if(isSorted && iterator !== undefined){
-       console.log('here');
-        result = result.slice(0,2);
-       console.log(result);
+    // if(isSorted && iterator !== undefined){
+    //    console.log('here');
+    //     result = result.slice(0,2);
+    //    console.log(result);
 
-    }
-    return result;
+    // }
+
   };
 
 
@@ -180,14 +187,15 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-       
+      var clone = [];
+      clone = clone.concat(collection);
       var result = accumulator;
-      if(accumulator === undefined)
-        result = collection[0];
-
-
-      _.each(collection,function(element){
-      result = iterator(result,element);
+      if(accumulator === undefined){
+        result = clone[0];
+        clone.splice(0, 1);
+      }
+      _.each(clone,function(element){
+        result = iterator(result,element);
       })
       return result;
   };
